@@ -118,3 +118,4 @@ toggle = ttk.Checkbutton(bootstyle="success-round-toggle")
 toggle.pack()
 toggle.place(relx=0.26, rely=0.26)
 root.mainloop()
+a=0
