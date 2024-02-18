@@ -168,6 +168,10 @@ label2 = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="d
 label2.pack()
 label2.place(relx=0.05, rely=0.25)
 
+label3 = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11), bootstyle="default")
+label3.pack()
+label3.place(relx=0.05, rely=0.35)
+
 toggle = ttk.Checkbutton(bootstyle="success-round-toggle", variable=channel, onvalue=1, offvalue=0)
 toggle.pack()
 toggle.place(relx=0.26, rely=0.26)
