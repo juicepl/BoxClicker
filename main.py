@@ -14,6 +14,19 @@ def program():
     time.sleep(3)
     print(channel.get())
     print("works")
+    try:
+        keyboard.type('/')
+        time.sleep(0.1)
+        keyboard.type('ch')
+        keyboard.press(Key.enter)
+        keyboard.release(Key.enter)
+        time.sleep(0.3)
+        mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
+        mouse.press(Button.left)
+        mouse.release(Button.left)
+        time.sleep(2)
+    except:
+        pass
     y = 1
     if entry.get() == "":
         t1 = 0.05
@@ -164,15 +177,23 @@ entry2 = ttk.Entry(root)
 entry2.pack()
 entry2.place(relx=0.2, rely=0.15)
 
+entry4 = ttk.Entry(root)
+entry4.pack()
+entry4.place(relx=0.26, rely=0.25)
+
+label4 = ttk.Label(text="Ilość generatorów: ", font=("Calibri", 11), bootstyle="default")
+label4.pack()
+label4.place(relx=0.05, rely=0.25)
+
 label2 = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="default")
 label2.pack()
-label2.place(relx=0.05, rely=0.25)
+label2.place(relx=0.05, rely=0.35)
 
 label3 = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11), bootstyle="default")
 label3.pack()
-label3.place(relx=0.05, rely=0.35)
+label3.place(relx=0.05, rely=0.45)
 
 toggle = ttk.Checkbutton(bootstyle="success-round-toggle", variable=channel, onvalue=1, offvalue=0)
 toggle.pack()
-toggle.place(relx=0.26, rely=0.26)
+toggle.place(relx=0.26, rely=0.36)
 root.mainloop()
