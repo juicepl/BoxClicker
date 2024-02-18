@@ -1,5 +1,6 @@
 import tkinter as tk
 import pyautogui
+import pynput
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from pynput.keyboard import Key, Controller as KeyboardController
@@ -10,6 +11,15 @@ from ctypes import windll
 keyboard = KeyboardController()
 mouse = MouseController()
 event = threading.Event()
+
+
+def listener():
+    with pynput.keyboard.Listener(
+            on_press=on_press) as listener:
+        listener.join()
+    listener = pynput.keyboard.Listener(
+        on_press=on_press)
+    listener.start()
 
 
 def program():
@@ -36,16 +46,8 @@ def program():
         keyboard.press(Key.esc)
         keyboard.release(Key.esc)
     y = 1
-    if entry.get() == "":
-        t1 = 0.05
-        t2 = 0.7
-    else:
-        try:
-            t1 = float(entry.get())
-            t2 = float(entry2.get())
-        except:
-            t1 = 0.05
-            t2 = 0.1
+    t1 = 0.05
+    t2 = 0.1
     while not event.is_set():
         time.sleep(3)
         keyboard.press('d')
@@ -137,6 +139,14 @@ class Wrapper:
 my_thread = Wrapper()
 
 
+def on_press(key):
+    if format(key) == Key.f5:
+        if my_thread.started:
+            umulti()
+        else:
+            multi()
+
+
 def multi():
     event.clear()
     my_thread.start()
@@ -155,6 +165,7 @@ root.title(tk_title)
 root.resizable(0, 0)
 root.call("wm", "attributes", ".", "-topmost", "true")
 root.overrideredirect(True)
+
 root.minimized = False  # only to know if root is minimized
 root.maximized = False  # only to know if root is maximized
 
@@ -162,7 +173,7 @@ LGRAY = '#3e4042'  # button color effects in the title bar (Hex color)
 DGRAY = '#25292e'  # window background color               (Hex color)
 RGRAY = '#10121f'  # title bar color                       (Hex color)
 
-title_bar = tk.Frame(root, bg=RGRAY, relief='raised', bd=0, highlightthickness=0)
+title_bar = tk.Frame(root, relief='raised', bd=0, highlightthickness=0, height=0)
 
 
 def set_appwindow(mainWindow):  # to display the window icon on the taskbar,
@@ -180,40 +191,11 @@ def set_appwindow(mainWindow):  # to display the window icon on the taskbar,
 
     mainWindow.wm_withdraw()
     mainWindow.after(10, lambda: mainWindow.wm_deiconify())
-
-
-def minimize_me():
-    root.attributes("-alpha", 0)  # so you can't see the window when is minimized
-    root.minimized = True
-
-
-def deminimize(event):
-    root.focus()
-    root.attributes("-alpha", 1)  # so you can see the window when is not minimized
-    if root.minimized == True:
-        root.minimized = False
-
-
-def maximize_me():
-    if root.maximized == False:  # if the window was not maximized
-        root.normal_size = root.geometry()
-        expand_button.config(text=" 🗗 ")
-        root.geometry(f"{root.winfo_screenwidth()}x{root.winfo_screenheight()}+0+0")
-        root.maximized = not root.maximized
-        # now it's maximized
-
-    else:  # if the window was maximized
-        expand_button.config(text=" 🗖 ")
-        root.geometry(root.normal_size)
-        root.maximized = not root.maximized
-        # now it is not maximized
-
-
 # put a close button on the title bar
 close_button = tk.Button(title_bar, text='  ×  ', command=root.destroy, padx=2, pady=2, font=("calibri", 13),
                          bd=0, fg='white', highlightthickness=0)
-minimize_button = tk.Button(title_bar, text=' 🗕 ', command=minimize_me, padx=2, pady=2, bd=0, fg='white',
-                            font=("calibri", 13), highlightthickness=0)
+# minimize_button = tk.Button(title_bar, text=' 🗕 ', command=minimize_me, padx=2, pady=2, bd=0, fg='white',
+#                            font=("calibri", 13), highlightthickness=0)
 title_bar_title = tk.Label(title_bar, text=tk_title, bd=0, fg='white', font=("helvetica", 10),
                            highlightthickness=0)
 
@@ -223,7 +205,7 @@ window = tk.Frame(root, highlightthickness=0)
 # pack the widgets
 title_bar.pack(fill=X)
 close_button.pack(side=RIGHT, ipadx=7, ipady=1)
-minimize_button.pack(side=RIGHT, ipadx=7, ipady=1)
+# minimize_button.pack(side=RIGHT, ipadx=7, ipady=1)
 title_bar_title.pack(side=LEFT, padx=10)
 window.pack(expand=1, fill=BOTH)  # replace this with your main Canvas/Frame/etc.
 
@@ -269,30 +251,25 @@ def returnm_size_on_hovering(event):
 
 
 def get_pos(event):  # this is executed when the title bar is clicked to move the window
-    if root.maximized == False:
+    xwin = root.winfo_x()
+    ywin = root.winfo_y()
+    startx = event.x_root
+    starty = event.y_root
 
-        xwin = root.winfo_x()
-        ywin = root.winfo_y()
-        startx = event.x_root
-        starty = event.y_root
+    ywin = ywin - starty
+    xwin = xwin - startx
 
-        ywin = ywin - starty
-        xwin = xwin - startx
+    def move_window(event):  # runs when window is dragged
+        root.config(cursor="fleur")
+        root.geometry(f'+{event.x_root + xwin}+{event.y_root + ywin}')
 
-        def move_window(event):  # runs when window is dragged
-            root.config(cursor="fleur")
-            root.geometry(f'+{event.x_root + xwin}+{event.y_root + ywin}')
+    def release_window(event):  # runs when window is released
+        root.config(cursor="arrow")
 
-        def release_window(event):  # runs when window is released
-            root.config(cursor="arrow")
-
-        title_bar.bind('<B1-Motion>', move_window)
-        title_bar.bind('<ButtonRelease-1>', release_window)
-        title_bar_title.bind('<B1-Motion>', move_window)
-        title_bar_title.bind('<ButtonRelease-1>', release_window)
-    else:
-        expand_button.config(text=" 🗖 ")
-        root.maximized = not root.maximized
+    title_bar.bind('<B1-Motion>', move_window)
+    title_bar.bind('<ButtonRelease-1>', release_window)
+    title_bar_title.bind('<B1-Motion>', move_window)
+    title_bar_title.bind('<ButtonRelease-1>', release_window)
 
 
 title_bar.bind('<Button-1>', get_pos)  # so you can drag the window from the title bar
@@ -301,13 +278,10 @@ title_bar_title.bind('<Button-1>', get_pos)  # so you can drag the window from t
 # button effects in the title bar when hovering over buttons
 close_button.bind('<Enter>', changex_on_hovering)
 close_button.bind('<Leave>', returnx_to_normalstate)
-minimize_button.bind('<Enter>', changem_size_on_hovering)
-minimize_button.bind('<Leave>', returnm_size_on_hovering)
+# minimize_button.bind('<Enter>', changem_size_on_hovering)
+# minimize_button.bind('<Leave>', returnm_size_on_hovering)
 
 # some settings
-root.bind("<FocusIn>", deminimize)  # to view the window by clicking on the window icon on the taskbar
-root.after(10, lambda: set_appwindow(root))  # to see the icon on the task bar
-
 b1 = ttk.Button(root, text="Start", bootstyle=SUCCESS, command=multi)
 b1.pack(side=BOTTOM, padx=10, pady=10)
 channel = tk.IntVar()
@@ -342,22 +316,22 @@ entry2.place(relx=0.2, rely=0.15)'''
 
 entry4 = ttk.Entry(root)
 entry4.pack()
-entry4.place(relx=0.26, rely=0.1)
+entry4.place(relx=0.26, rely=0.15)
 
 label4 = ttk.Label(text="Ilość generatorów: ", font=("Calibri", 11), bootstyle="default")
 label4.pack()
-label4.place(relx=0.05, rely=0.1)
+label4.place(relx=0.05, rely=0.15)
 
 label2 = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="default")
 label2.pack()
-label2.place(relx=0.05, rely=0.2)
+label2.place(relx=0.05, rely=0.25)
 
 label3 = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11),
                    bootstyle="default")
 label3.pack()
-label3.place(relx=0.05, rely=0.3)
+label3.place(relx=0.05, rely=0.35)
 
 toggle = ttk.Checkbutton(bootstyle="success-round-toggle", variable=channel, onvalue=1, offvalue=0)
 toggle.pack()
-toggle.place(relx=0.26, rely=0.21)
+toggle.place(relx=0.26, rely=0.26)
 root.mainloop()
