@@ -1,12 +1,10 @@
 from tkinter import *
-
 import pyautogui
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Button, Controller as MouseController
 import time, threading, sys
-
 keyboard = KeyboardController()
 mouse = MouseController()
 event = threading.Event()
@@ -19,18 +17,19 @@ def program():
     y = 1
     if entry.get() == "":
         t1 = 0.05
-        t2 = 1
+        t2 = 0.7
     else:
         try:
             t1 = float(entry.get())
             t2 = float(entry2.get())
         except:
             t1 = 0.05
-            t2 = 1
+            t2 = 0.1
     while not event.is_set():
+        time.sleep(3)
         keyboard.press('d')
         mouse.press(Button.left)
-        for i in range(0, 295):
+        for i in range(0, 70):
             if event.is_set():
                 keyboard.release(Key.shift)
                 mouse.release(Button.left)
@@ -42,7 +41,9 @@ def program():
             time.sleep(t1)
             keyboard.release(Key.shift)
             time.sleep(t2)
-        time.sleep(0.1)
+        time.sleep(0.2)
+        keyboard.release('d')
+        mouse.release(Button.left)
         if channel.get() == 1:
             if my_thread.n == 9:
                 my_thread.n = 0
@@ -59,11 +60,10 @@ def program():
             mouse.press(Button.left)
             mouse.release(Button.left)
             my_thread.n = my_thread.n + 1
-        keyboard.release('d')
-        mouse.release(Button.left)
+        time.sleep(3)
         keyboard.press('a')
         mouse.press(Button.left)
-        for i in range(0, 295):
+        for i in range(0, 70):
             if event.is_set():
                 keyboard.release(Key.shift)
                 mouse.release(Button.left)
@@ -94,7 +94,6 @@ def program():
             mouse.press(Button.left)
             mouse.release(Button.left)
             my_thread.n = my_thread.n + 1
-            time.clock.tick(100)
 
 
 class Wrapper:
@@ -132,6 +131,7 @@ root = ttk.Window(themename="vapor")
 root.geometry('600x400')
 root.title("RapyClicker v0.1.0")
 root.resizable(0, 0)
+root.call("wm", "attributes", ".", "-topmost", "true")
 b1 = ttk.Button(root, text="Start", bootstyle=SUCCESS, command=multi)
 b1.pack(side=BOTTOM, padx=10, pady=10)
 channel = IntVar()
