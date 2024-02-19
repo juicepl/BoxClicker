@@ -32,9 +32,6 @@ if result[0] == None or not Helpers.IsOnRightMachine(result[0], v=2):
     # an error occurred or the key is invalid or it cannot be activated
     # (eg. the limit of activated devices was achieved)
     print("Licencja nie dziala: {0}".format(result[1]))
-    labell3 = ttk.Label(login, text="Licencja nie działa: {0}".format(result[1]), font=("Calibri", 11), bootstyle="danger")
-    labell3.pack()
-    labell3.place(relx=0.05, rely=0.5)
 else:
     f2 = open("licence.txt", "a+")
     f2.write(licencekeyvar)
