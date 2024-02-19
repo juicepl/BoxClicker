@@ -13,6 +13,101 @@ from licensing.methods import Key, Helpers
 RSAPubKey = "<RSAKeyValue><Modulus>uxDDH175/MMY611BISqbqrWo+KmcitqIEBPvJbCsvwDDGvyKmzS7Ho9BsqI3FhZ6VA4R5Zan20B7BHCmGQunkDIeTdcPs0RnAnqV1dorz1SMOmeVnus+ury1osTYoSlViDDu1cAH7vyAspXjyxI637vCIWmFhpkIXRHcvs8/ZdowAfLfOpn+qW6COjE2iXzUZnW+mhfzBCaNUYlo6er6rJa/xfsSKLIcweA4GNiIRu9++dx3r0VjDoMFxb6drti0pD+2EDpm7jNrGIdcw6o3ohmP28/fXuymWqnMXuId8DNxrcVMlKwHBc2ACRZPWgeztmFgWmwS4Vg8Iu28liUkIQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
 auth = "WyI3NTExMTUzMiIsIkpBcWFpV2poR29XS290M2REZVpHTWsvYXQvTmZxZElFSm1XQzlDNnciXQ=="
 
+
+def set_appwindow(mainWindow):  # to display the window icon on the taskbar,
+    # even when using root.overrideredirect(True
+    # Some WindowsOS styles, required for task bar integration
+    GWL_EXSTYLE = -20
+    WS_EX_APPWINDOW = 0x00040000
+    WS_EX_TOOLWINDOW = 0x00000080
+    # Magic
+    hwnd = windll.user32.GetParent(mainWindow.winfo_id())
+    stylew = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+    stylew = stylew & ~WS_EX_TOOLWINDOW
+    stylew = stylew | WS_EX_APPWINDOW
+    res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, stylew)
+
+    mainWindow.wm_withdraw()
+    mainWindow.after(10, lambda: mainWindow.wm_deiconify())
+def _from_rgb(rgb):
+    # translates an rgb tuple of int to a tkinter friendly color code
+    r, g, b = rgb
+    return f'#{r:02x}{g:02x}{b:02x}'
+
+
+def changex_on_hovering(event):
+    global close_button
+    close_button['bg'] = "red"
+
+
+def returnx_to_normalstate(event):
+    global close_button
+    close_button['bg'] = _from_rgb((112, 68, 196))
+
+
+def change_size_on_hovering(event):
+    global expand_button
+    expand_button['bg'] = _from_rgb((15, 3, 33))
+
+
+def return_size_on_hovering(event):
+    global expand_button
+    expand_button['bg'] = _from_rgb((112, 68, 196))
+
+
+def changem_size_on_hovering(event):
+    global minimize_button
+    minimize_button['bg'] = _from_rgb((15, 3, 33))
+
+
+def returnm_size_on_hovering(event):
+    global minimize_button
+    minimize_button['bg'] = _from_rgb((112, 68, 196))
+
+
+def get_pos(event):  # this is executed when the title bar is clicked to move the window
+    xwin = root.winfo_x()
+    ywin = root.winfo_y()
+    startx = event.x_root
+    starty = event.y_root
+
+    ywin = ywin - starty
+    xwin = xwin - startx
+
+    def move_window(event):  # runs when window is dragged
+        root.config(cursor="fleur")
+        root.geometry(f'+{event.x_root + xwin}+{event.y_root + ywin}')
+
+    def release_window(event):  # runs when window is released
+        root.config(cursor="arrow")
+
+    title_bar.bind('<B1-Motion>', move_window)
+    title_bar.bind('<ButtonRelease-1>', release_window)
+    title_bar_title.bind('<B1-Motion>', move_window)
+    title_bar_title.bind('<ButtonRelease-1>', release_window)
+
+def get_pos2(event):  # this is executed when the title bar is clicked to move the window
+    xwin = login.winfo_x()
+    ywin = login.winfo_y()
+    startx = event.x_root
+    starty = event.y_root
+
+    ywin = ywin - starty
+    xwin = xwin - startx
+
+    def move_window2(event):  # runs when window is dragged
+        login.config(cursor="fleur")
+        login.geometry(f'+{event.x_root + xwin}+{event.y_root + ywin}')
+
+    def release_window2(event):  # runs when window is released
+        login.config(cursor="arrow")
+
+    title_bar.bind('<B1-Motion>', move_window2)
+    title_bar.bind('<ButtonRelease-1>', release_window2)
+    title_bar_title.bind('<B1-Motion>', move_window2)
+    title_bar_title.bind('<ButtonRelease-1>', release_window2)
+
+
 def varlogin():
     licencekeyvar = entryl.get()
     result = Key.activate(token=auth,\
@@ -25,7 +120,7 @@ def varlogin():
         # (eg. the limit of activated devices was achieved)
         labell3 = ttk.Label(login, text="Licencja nie działa:\n {0}".format(result[1]), font=("Calibri", 11), bootstyle="danger")
         labell3.pack()
-        labell3.place(relx=0.05, rely=0.5)
+        labell3.place(relx=0.05, rely=0.6)
     else:
 
         f2 = open("licence.txt", "a+")
@@ -58,23 +153,51 @@ try:
         license_key = result[0]
         print("Licencja konczy sie: " + str(license_key.expires))
 except FileNotFoundError:
-    login_title = "Napisz kod licencyjny poniżej:"
+    login_title = "Aktywacja"
     login = ttk.Window(themename="vapor")
-    login.geometry('300x200')
+    login.geometry('400x250')
     login.title(login_title)
     login.resizable(0, 0)
     login.call("wm", "attributes", ".", "-topmost", "true")
+    login.overrideredirect(True)
+
+    login.minimized = False  # only to know if root is minimized
+    login.maximized = False  # only to know if root is maximized
+
+    title_bar = tk.Frame(login, relief='raised', bd=0, highlightthickness=0, height=0)
+    close_button = tk.Button(title_bar, text='  ×  ', command=login.destroy, padx=2, pady=2, font=("calibri", 13),
+                             bd=0, fg='white', highlightthickness=0)
+    # minimize_button = tk.Button(title_bar, text=' 🗕 ', command=minimize_me, padx=2, pady=2, bd=0, fg='white',
+    #                            font=("calibri", 13), highlightthickness=0)
+    title_bar_title = tk.Label(title_bar, text=login_title, bd=0, fg='white', font=("helvetica", 10),
+                               highlightthickness=0)
+
+    # a frame for the main area of the window, this is where the actual app will go
+    window = tk.Frame(login, highlightthickness=0)
+
+    # pack the widgets
+    title_bar.pack(fill=X)
+    close_button.pack(side=RIGHT, ipadx=7, ipady=1)
+    # minimize_button.pack(side=RIGHT, ipadx=7, ipady=1)
+    title_bar_title.pack(side=LEFT, padx=10)
+    window.pack(expand=1, fill=BOTH)
+    title_bar.bind('<Button-1>', get_pos2)  # so you can drag the window from the title bar
+    title_bar_title.bind('<Button-1>', get_pos2)  # so you can drag the window from the title
+
+    # button effects in the title bar when hovering over buttons
+    close_button.bind('<Enter>', changex_on_hovering)
+    close_button.bind('<Leave>', returnx_to_normalstate)
     entryl = ttk.Entry(login)
     entryl.pack()
-    entryl.place(relx=0.35, rely=0.3)
+    entryl.place(relx=0.3, rely=0.4)
 
     labell = ttk.Label(login, text="Kod licencji: ", font=("Calibri", 11), bootstyle="default")
     labell.pack(side=TOP)
-    labell.place(relx=0.05, rely=0.3)
+    labell.place(relx=0.05, rely=0.4)
 
     labell2 = ttk.Label(login, text="Aktywuj program. ", font=("Calibri", 24), bootstyle="default")
     labell2.pack(side=TOP)
-    labell2.place(relx=0.05, rely=0.05)
+    labell2.place(relx=0.05, rely=0.15)
     bl = ttk.Button(login, text="Kontynuuj", bootstyle=(INFO, OUTLINE), command=varlogin)
     bl.pack(side=BOTTOM, padx=10, pady=10)
     login.mainloop()
@@ -105,16 +228,16 @@ if 1==1:
             keyboard.type('/')
             time.sleep(0.1)
             keyboard.type('ch')
-            keyboard.press(Key.enter)
-            keyboard.release(Key.enter)
+            keyboard.press(pynput.keyboard.Key.enter)
+            keyboard.release(pynput.keyboard.Key.enter)
             time.sleep(0.3)
             mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
             mouse.press(Button.left)
             mouse.release(Button.left)
             time.sleep(2)
         except:
-            keyboard.press(Key.esc)
-            keyboard.release(Key.esc)
+            keyboard.press(pynput.keyboard.Key.esc)
+            keyboard.release(pynput.keyboard.Key.esc)
         y = 1
         t1 = 0.05
         t2 = 0.1
@@ -124,15 +247,15 @@ if 1==1:
             mouse.press(Button.left)
             for i in range(0, isec):
                 if event.is_set():
-                    keyboard.release(Key.shift)
+                    keyboard.release(pynput.keyboard.Key.shift)
                     mouse.release(Button.left)
                     keyboard.release('d')
                     print("!!!!")
                     sys.exit(0)
                     return
-                keyboard.press(Key.shift)
+                keyboard.press(pynput.keyboard.Key.shift)
                 time.sleep(t1)
-                keyboard.release(Key.shift)
+                keyboard.release(pynput.keyboard.Key.shift)
                 time.sleep(t2)
             time.sleep(0.2)
             keyboard.release('d')
@@ -146,8 +269,8 @@ if 1==1:
                 keyboard.type('/')
                 time.sleep(0.1)
                 keyboard.type('ch')
-                keyboard.press(Key.enter)
-                keyboard.release(Key.enter)
+                keyboard.press(pynput.keyboard.Key.enter)
+                keyboard.release(pynput.keyboard.Key.enter)
                 time.sleep(0.3)
                 mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
                 mouse.press(Button.left)
@@ -158,15 +281,15 @@ if 1==1:
             mouse.press(Button.left)
             for i in range(0, isec):
                 if event.is_set():
-                    keyboard.release(Key.shift)
+                    keyboard.release(pynput.keyboard.Key.shift)
                     mouse.release(Button.left)
                     keyboard.release('a')
                     print("!!!!")
                     sys.exit(0)
                     return
-                keyboard.press(Key.shift)
+                keyboard.press(pynput.keyboard.Key.shift)
                 time.sleep(float(t1))
-                keyboard.release(Key.shift)
+                keyboard.release(pynput.keyboard.Key.shift)
                 time.sleep(float(t2))
             keyboard.release('a')
             mouse.release(Button.left)
@@ -180,8 +303,8 @@ if 1==1:
                 keyboard.type('/')
                 time.sleep(0.1)
                 keyboard.type('ch')
-                keyboard.press(Key.enter)
-                keyboard.release(Key.enter)
+                keyboard.press(pynput.keyboard.Key.enter)
+                keyboard.release(pynput.keyboard.Key.enter)
                 time.sleep(0.3)
                 mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
                 mouse.press(Button.left)
@@ -241,21 +364,7 @@ if 1==1:
     title_bar = tk.Frame(root, relief='raised', bd=0, highlightthickness=0, height=0)
 
 
-    def set_appwindow(mainWindow):  # to display the window icon on the taskbar,
-        # even when using root.overrideredirect(True
-        # Some WindowsOS styles, required for task bar integration
-        GWL_EXSTYLE = -20
-        WS_EX_APPWINDOW = 0x00040000
-        WS_EX_TOOLWINDOW = 0x00000080
-        # Magic
-        hwnd = windll.user32.GetParent(mainWindow.winfo_id())
-        stylew = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
-        stylew = stylew & ~WS_EX_TOOLWINDOW
-        stylew = stylew | WS_EX_APPWINDOW
-        res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, stylew)
 
-        mainWindow.wm_withdraw()
-        mainWindow.after(10, lambda: mainWindow.wm_deiconify())
 
 
     # put a close button on the title bar
@@ -280,61 +389,6 @@ if 1==1:
     # xwin=None
     # ywin=None
     # bind title bar motion to the move window function
-    def _from_rgb(rgb):
-        #translates an rgb tuple of int to a tkinter friendly color code
-        r, g, b = rgb
-        return f'#{r:02x}{g:02x}{b:02x}'
-
-    def changex_on_hovering(event):
-        global close_button
-        close_button['bg'] = "red"
-
-
-    def returnx_to_normalstate(event):
-        global close_button
-        close_button['bg'] = _from_rgb((112, 68, 196))
-
-
-    def change_size_on_hovering(event):
-        global expand_button
-        expand_button['bg'] = _from_rgb((15, 3, 33))
-
-
-    def return_size_on_hovering(event):
-        global expand_button
-        expand_button['bg'] = _from_rgb((112, 68, 196))
-
-
-    def changem_size_on_hovering(event):
-        global minimize_button
-        minimize_button['bg'] = _from_rgb((15, 3, 33))
-
-
-    def returnm_size_on_hovering(event):
-        global minimize_button
-        minimize_button['bg'] = _from_rgb((112, 68, 196))
-
-
-    def get_pos(event):  # this is executed when the title bar is clicked to move the window
-        xwin = root.winfo_x()
-        ywin = root.winfo_y()
-        startx = event.x_root
-        starty = event.y_root
-
-        ywin = ywin - starty
-        xwin = xwin - startx
-
-        def move_window(event):  # runs when window is dragged
-            root.config(cursor="fleur")
-            root.geometry(f'+{event.x_root + xwin}+{event.y_root + ywin}')
-
-        def release_window(event):  # runs when window is released
-            root.config(cursor="arrow")
-
-        title_bar.bind('<B1-Motion>', move_window)
-        title_bar.bind('<ButtonRelease-1>', release_window)
-        title_bar_title.bind('<B1-Motion>', move_window)
-        title_bar_title.bind('<ButtonRelease-1>', release_window)
 
 
     title_bar.bind('<Button-1>', get_pos)  # so you can drag the window from the title bar
