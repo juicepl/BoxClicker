@@ -9,12 +9,16 @@ import time, threading, sys
 from ctypes import windll
 from licensing.models import *
 from licensing.methods import Key, Helpers
+global log
+log = 0
+def varlogin():
+    log = 1
 try:
     f = open("licence.txt","r+")
     licencekeyvar = f.read(23)
     print(licencekeyvar)
 except:
-    print("Podaj kod licencji: ")
+    print("Podaj kod licencyjny:" )
     licencekeyvar = input()
 RSAPubKey = "<RSAKeyValue><Modulus>uxDDH175/MMY611BISqbqrWo+KmcitqIEBPvJbCsvwDDGvyKmzS7Ho9BsqI3FhZ6VA4R5Zan20B7BHCmGQunkDIeTdcPs0RnAnqV1dorz1SMOmeVnus+ury1osTYoSlViDDu1cAH7vyAspXjyxI637vCIWmFhpkIXRHcvs8/ZdowAfLfOpn+qW6COjE2iXzUZnW+mhfzBCaNUYlo6er6rJa/xfsSKLIcweA4GNiIRu9++dx3r0VjDoMFxb6drti0pD+2EDpm7jNrGIdcw6o3ohmP28/fXuymWqnMXuId8DNxrcVMlKwHBc2ACRZPWgeztmFgWmwS4Vg8Iu28liUkIQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
 auth = "WyI3NTExMTUzMiIsIkpBcWFpV2poR29XS290M2REZVpHTWsvYXQvTmZxZElFSm1XQzlDNnciXQ=="
@@ -28,6 +32,9 @@ if result[0] == None or not Helpers.IsOnRightMachine(result[0], v=2):
     # an error occurred or the key is invalid or it cannot be activated
     # (eg. the limit of activated devices was achieved)
     print("Licencja nie dziala: {0}".format(result[1]))
+    labell3 = ttk.Label(login, text="Licencja nie działa: {0}".format(result[1]), font=("Calibri", 11), bootstyle="danger")
+    labell3.pack()
+    labell3.place(relx=0.05, rely=0.5)
 else:
     f2 = open("licence.txt", "a+")
     f2.write(licencekeyvar)
