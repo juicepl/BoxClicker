@@ -227,7 +227,7 @@ if 1==1:
         print("test")
 
 
-    tk_title = "RapyClicker v0.1.0"
+    tk_title = "RapyClicker v1.0.0 Pre-release 1"
     root = ttk.Window(themename="vapor")
     root.geometry('600x400')
     root.title(tk_title)
@@ -237,9 +237,6 @@ if 1==1:
 
     root.minimized = False  # only to know if root is minimized
     root.maximized = False  # only to know if root is maximized
-    LGRAY = '#3e4042'  # button color effects in the title bar (Hex color)
-    DGRAY = '#25292e'  # window background color               (Hex color)
-    RGRAY = '#10121f'  # title bar color                       (Hex color)
 
     title_bar = tk.Frame(root, relief='raised', bd=0, highlightthickness=0, height=0)
 
