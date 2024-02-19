@@ -7,331 +7,355 @@ from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Button, Controller as MouseController
 import time, threading, sys
 from ctypes import windll
+from licensing.models import *
+from licensing.methods import Key, Helpers
+try:
+    f = open("licence.txt","r+")
+    licencekeyvar = f.read(23)
+    print(licencekeyvar)
+except:
+    print("Podaj kod licencji: ")
+    licencekeyvar = input()
+RSAPubKey = "<RSAKeyValue><Modulus>uxDDH175/MMY611BISqbqrWo+KmcitqIEBPvJbCsvwDDGvyKmzS7Ho9BsqI3FhZ6VA4R5Zan20B7BHCmGQunkDIeTdcPs0RnAnqV1dorz1SMOmeVnus+ury1osTYoSlViDDu1cAH7vyAspXjyxI637vCIWmFhpkIXRHcvs8/ZdowAfLfOpn+qW6COjE2iXzUZnW+mhfzBCaNUYlo6er6rJa/xfsSKLIcweA4GNiIRu9++dx3r0VjDoMFxb6drti0pD+2EDpm7jNrGIdcw6o3ohmP28/fXuymWqnMXuId8DNxrcVMlKwHBc2ACRZPWgeztmFgWmwS4Vg8Iu28liUkIQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
+auth = "WyI3NTExMTUzMiIsIkpBcWFpV2poR29XS290M2REZVpHTWsvYXQvTmZxZElFSm1XQzlDNnciXQ=="
 
-keyboard = KeyboardController()
-mouse = MouseController()
-event = threading.Event()
+result = Key.activate(token=auth,\
+                   rsa_pub_key=RSAPubKey,\
+                   product_id=24135, \
+                   key=licencekeyvar,\
+                   machine_code=Helpers.GetMachineCode(v=2))
+if result[0] == None or not Helpers.IsOnRightMachine(result[0], v=2):
+    # an error occurred or the key is invalid or it cannot be activated
+    # (eg. the limit of activated devices was achieved)
+    print("Licencja nie dziala: {0}".format(result[1]))
+else:
+    f2 = open("licence.txt", "a+")
+    f2.write(licencekeyvar)
+    # everything went fine if we are here!
+    print("Licencja dziala!")
+    license_key = result[0]
+    print("Licencja konczy sie: " + str(license_key.expires))
+    keyboard = KeyboardController()
+    mouse = MouseController()
+    event = threading.Event()
 
 
-def listener():
-    with pynput.keyboard.Listener(
-            on_press=on_press) as listener:
-        listener.join()
-    listener = pynput.keyboard.Listener(
-        on_press=on_press)
-    listener.start()
+    def listener():
+        with pynput.keyboard.Listener(
+                on_press=on_press) as listener:
+            listener.join()
+        listener = pynput.keyboard.Listener(
+            on_press=on_press)
+        listener.start()
 
 
-def program():
-    try:
-        gencount = int(entry4.get())
-    except:
-        sys.exit(0)
-    isec = int(5 * gencount + (gencount - 1) * 3.7)
-    time.sleep(3)
-    print(channel.get())
-    print("works")
-    try:
-        keyboard.type('/')
-        time.sleep(0.1)
-        keyboard.type('ch')
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        time.sleep(0.3)
-        mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
-        mouse.press(Button.left)
-        mouse.release(Button.left)
-        time.sleep(2)
-    except:
-        keyboard.press(Key.esc)
-        keyboard.release(Key.esc)
-    y = 1
-    t1 = 0.05
-    t2 = 0.1
-    while not event.is_set():
+    def program():
+        try:
+            gencount = int(entry4.get())
+        except:
+            sys.exit(0)
+        isec = int(5 * gencount + (gencount - 1) * 3.7)
         time.sleep(3)
-        keyboard.press('d')
-        mouse.press(Button.left)
-        for i in range(0, isec):
-            if event.is_set():
-                keyboard.release(Key.shift)
-                mouse.release(Button.left)
-                keyboard.release('d')
-                print("!!!!")
-                sys.exit(0)
-                return
-            keyboard.press(Key.shift)
-            time.sleep(t1)
-            keyboard.release(Key.shift)
-            time.sleep(t2)
-        time.sleep(0.2)
-        keyboard.release('d')
-        mouse.release(Button.left)
-        if channel.get() == 1:
-            if my_thread.n == 9:
-                my_thread.n = 0
-            cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
-                     "images/ch6.png", "images/ch7.png", "images/ch8.png"]
-            time.sleep(0.1)
+        print(channel.get())
+        print("works")
+        try:
             keyboard.type('/')
             time.sleep(0.1)
             keyboard.type('ch')
             keyboard.press(Key.enter)
             keyboard.release(Key.enter)
             time.sleep(0.3)
-            mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
+            mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
             mouse.press(Button.left)
             mouse.release(Button.left)
-            my_thread.n = my_thread.n + 1
-        time.sleep(3)
-        keyboard.press('a')
-        mouse.press(Button.left)
-        for i in range(0, isec):
-            if event.is_set():
+            time.sleep(2)
+        except:
+            keyboard.press(Key.esc)
+            keyboard.release(Key.esc)
+        y = 1
+        t1 = 0.05
+        t2 = 0.1
+        while not event.is_set():
+            time.sleep(3)
+            keyboard.press('d')
+            mouse.press(Button.left)
+            for i in range(0, isec):
+                if event.is_set():
+                    keyboard.release(Key.shift)
+                    mouse.release(Button.left)
+                    keyboard.release('d')
+                    print("!!!!")
+                    sys.exit(0)
+                    return
+                keyboard.press(Key.shift)
+                time.sleep(t1)
                 keyboard.release(Key.shift)
-                mouse.release(Button.left)
-                keyboard.release('a')
-                print("!!!!")
-                sys.exit(0)
-                return
-            keyboard.press(Key.shift)
-            time.sleep(float(t1))
-            keyboard.release(Key.shift)
-            time.sleep(float(t2))
-        keyboard.release('a')
-        mouse.release(Button.left)
-        time.sleep(0.1)
-        if channel.get() == 1:
-            if my_thread.n == 9:
-                my_thread.n = 0
-            cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
-                     "images/ch6.png", "images/ch7.png", "images/ch8.png"]
-            time.sleep(0.1)
-            keyboard.type('/')
-            time.sleep(0.1)
-            keyboard.type('ch')
-            keyboard.press(Key.enter)
-            keyboard.release(Key.enter)
-            time.sleep(0.3)
-            mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
-            mouse.press(Button.left)
+                time.sleep(t2)
+            time.sleep(0.2)
+            keyboard.release('d')
             mouse.release(Button.left)
-            my_thread.n = my_thread.n + 1
+            if channel.get() == 1:
+                if my_thread.n == 9:
+                    my_thread.n = 0
+                cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
+                         "images/ch6.png", "images/ch7.png", "images/ch8.png"]
+                time.sleep(0.1)
+                keyboard.type('/')
+                time.sleep(0.1)
+                keyboard.type('ch')
+                keyboard.press(Key.enter)
+                keyboard.release(Key.enter)
+                time.sleep(0.3)
+                mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
+                mouse.press(Button.left)
+                mouse.release(Button.left)
+                my_thread.n = my_thread.n + 1
+            time.sleep(3)
+            keyboard.press('a')
+            mouse.press(Button.left)
+            for i in range(0, isec):
+                if event.is_set():
+                    keyboard.release(Key.shift)
+                    mouse.release(Button.left)
+                    keyboard.release('a')
+                    print("!!!!")
+                    sys.exit(0)
+                    return
+                keyboard.press(Key.shift)
+                time.sleep(float(t1))
+                keyboard.release(Key.shift)
+                time.sleep(float(t2))
+            keyboard.release('a')
+            mouse.release(Button.left)
+            time.sleep(0.1)
+            if channel.get() == 1:
+                if my_thread.n == 9:
+                    my_thread.n = 0
+                cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
+                         "images/ch6.png", "images/ch7.png", "images/ch8.png"]
+                time.sleep(0.1)
+                keyboard.type('/')
+                time.sleep(0.1)
+                keyboard.type('ch')
+                keyboard.press(Key.enter)
+                keyboard.release(Key.enter)
+                time.sleep(0.3)
+                mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
+                mouse.press(Button.left)
+                mouse.release(Button.left)
+                my_thread.n = my_thread.n + 1
 
 
-class Wrapper:
-    def __init__(self):
-        self.started = False
-        self.n = 1
-
-    def start(self):
-        if self.started == False:
-            self.z = threading.Thread(target=program, daemon=True)
-            self.started = True
-            self.z.start()
-
-    def stop(self):
-        if self.started == True:
+    class Wrapper:
+        def __init__(self):
             self.started = False
-            self.z = None
+            self.n = 1
+
+        def start(self):
+            if not self.started:
+                self.z = threading.Thread(target=program, daemon=True)
+                self.started = True
+                self.z.start()
+
+        def stop(self):
+            if self.started:
+                self.started = False
+                self.z = None
 
 
-my_thread = Wrapper()
+    my_thread = Wrapper()
 
 
-def on_press(key):
-    if format(key) == Key.f5:
-        if my_thread.started:
-            umulti()
-        else:
-            multi()
+    def on_press(key):
+        if format(key) == Key.f5:
+            if my_thread.started:
+                umulti()
+            else:
+                multi()
 
 
-def multi():
-    event.clear()
-    my_thread.start()
+    def multi():
+        event.clear()
+        my_thread.start()
 
 
-def umulti():
-    event.set()
-    my_thread.stop()
-    print("test")
+    def umulti():
+        event.set()
+        my_thread.stop()
+        print("test")
 
 
-tk_title = "RapyClicker v0.1.0"
-root = ttk.Window(themename="vapor")
-root.geometry('600x400')
-root.title(tk_title)
-root.resizable(0, 0)
-root.call("wm", "attributes", ".", "-topmost", "true")
-root.overrideredirect(True)
+    tk_title = "RapyClicker v0.1.0"
+    root = ttk.Window(themename="vapor")
+    root.geometry('600x400')
+    root.title(tk_title)
+    root.resizable(0, 0)
+    root.call("wm", "attributes", ".", "-topmost", "true")
+    root.overrideredirect(True)
 
-root.minimized = False  # only to know if root is minimized
-root.maximized = False  # only to know if root is maximized
+    root.minimized = False  # only to know if root is minimized
+    root.maximized = False  # only to know if root is maximized
+    LGRAY = '#3e4042'  # button color effects in the title bar (Hex color)
+    DGRAY = '#25292e'  # window background color               (Hex color)
+    RGRAY = '#10121f'  # title bar color                       (Hex color)
 
-LGRAY = '#3e4042'  # button color effects in the title bar (Hex color)
-DGRAY = '#25292e'  # window background color               (Hex color)
-RGRAY = '#10121f'  # title bar color                       (Hex color)
-
-title_bar = tk.Frame(root, relief='raised', bd=0, highlightthickness=0, height=0)
-
-
-def set_appwindow(mainWindow):  # to display the window icon on the taskbar,
-    # even when using root.overrideredirect(True
-    # Some WindowsOS styles, required for task bar integration
-    GWL_EXSTYLE = -20
-    WS_EX_APPWINDOW = 0x00040000
-    WS_EX_TOOLWINDOW = 0x00000080
-    # Magic
-    hwnd = windll.user32.GetParent(mainWindow.winfo_id())
-    stylew = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
-    stylew = stylew & ~WS_EX_TOOLWINDOW
-    stylew = stylew | WS_EX_APPWINDOW
-    res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, stylew)
-
-    mainWindow.wm_withdraw()
-    mainWindow.after(10, lambda: mainWindow.wm_deiconify())
-# put a close button on the title bar
-close_button = tk.Button(title_bar, text='  ×  ', command=root.destroy, padx=2, pady=2, font=("calibri", 13),
-                         bd=0, fg='white', highlightthickness=0)
-# minimize_button = tk.Button(title_bar, text=' 🗕 ', command=minimize_me, padx=2, pady=2, bd=0, fg='white',
-#                            font=("calibri", 13), highlightthickness=0)
-title_bar_title = tk.Label(title_bar, text=tk_title, bd=0, fg='white', font=("helvetica", 10),
-                           highlightthickness=0)
-
-# a frame for the main area of the window, this is where the actual app will go
-window = tk.Frame(root, highlightthickness=0)
-
-# pack the widgets
-title_bar.pack(fill=X)
-close_button.pack(side=RIGHT, ipadx=7, ipady=1)
-# minimize_button.pack(side=RIGHT, ipadx=7, ipady=1)
-title_bar_title.pack(side=LEFT, padx=10)
-window.pack(expand=1, fill=BOTH)  # replace this with your main Canvas/Frame/etc.
+    title_bar = tk.Frame(root, relief='raised', bd=0, highlightthickness=0, height=0)
 
 
-# xwin=None
-# ywin=None
-# bind title bar motion to the move window function
-def _from_rgb(rgb):
-    """translates an rgb tuple of int to a tkinter friendly color code
-    """
-    r, g, b = rgb
-    return f'#{r:02x}{g:02x}{b:02x}'
+    def set_appwindow(mainWindow):  # to display the window icon on the taskbar,
+        # even when using root.overrideredirect(True
+        # Some WindowsOS styles, required for task bar integration
+        GWL_EXSTYLE = -20
+        WS_EX_APPWINDOW = 0x00040000
+        WS_EX_TOOLWINDOW = 0x00000080
+        # Magic
+        hwnd = windll.user32.GetParent(mainWindow.winfo_id())
+        stylew = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+        stylew = stylew & ~WS_EX_TOOLWINDOW
+        stylew = stylew | WS_EX_APPWINDOW
+        res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, stylew)
+
+        mainWindow.wm_withdraw()
+        mainWindow.after(10, lambda: mainWindow.wm_deiconify())
 
 
-def changex_on_hovering(event):
-    global close_button
-    close_button['bg'] = "red"
+    # put a close button on the title bar
+    close_button = tk.Button(title_bar, text='  ×  ', command=root.destroy, padx=2, pady=2, font=("calibri", 13),
+                             bd=0, fg='white', highlightthickness=0)
+    # minimize_button = tk.Button(title_bar, text=' 🗕 ', command=minimize_me, padx=2, pady=2, bd=0, fg='white',
+    #                            font=("calibri", 13), highlightthickness=0)
+    title_bar_title = tk.Label(title_bar, text=tk_title, bd=0, fg='white', font=("helvetica", 10),
+                               highlightthickness=0)
+
+    # a frame for the main area of the window, this is where the actual app will go
+    window = tk.Frame(root, highlightthickness=0)
+
+    # pack the widgets
+    title_bar.pack(fill=X)
+    close_button.pack(side=RIGHT, ipadx=7, ipady=1)
+    # minimize_button.pack(side=RIGHT, ipadx=7, ipady=1)
+    title_bar_title.pack(side=LEFT, padx=10)
+    window.pack(expand=1, fill=BOTH)  # replace this with your main Canvas/Frame/etc.
 
 
-def returnx_to_normalstate(event):
-    global close_button
-    close_button['bg'] = _from_rgb((112, 68, 196))
+    # xwin=None
+    # ywin=None
+    # bind title bar motion to the move window function
+    def _from_rgb(rgb):
+        #translates an rgb tuple of int to a tkinter friendly color code
+        r, g, b = rgb
+        return f'#{r:02x}{g:02x}{b:02x}'
+
+    def changex_on_hovering(event):
+        global close_button
+        close_button['bg'] = "red"
 
 
-def change_size_on_hovering(event):
-    global expand_button
-    expand_button['bg'] = _from_rgb((15, 3, 33))
+    def returnx_to_normalstate(event):
+        global close_button
+        close_button['bg'] = _from_rgb((112, 68, 196))
 
 
-def return_size_on_hovering(event):
-    global expand_button
-    expand_button['bg'] = _from_rgb((112, 68, 196))
+    def change_size_on_hovering(event):
+        global expand_button
+        expand_button['bg'] = _from_rgb((15, 3, 33))
 
 
-def changem_size_on_hovering(event):
-    global minimize_button
-    minimize_button['bg'] = _from_rgb((15, 3, 33))
+    def return_size_on_hovering(event):
+        global expand_button
+        expand_button['bg'] = _from_rgb((112, 68, 196))
 
 
-def returnm_size_on_hovering(event):
-    global minimize_button
-    minimize_button['bg'] = _from_rgb((112, 68, 196))
+    def changem_size_on_hovering(event):
+        global minimize_button
+        minimize_button['bg'] = _from_rgb((15, 3, 33))
 
 
-def get_pos(event):  # this is executed when the title bar is clicked to move the window
-    xwin = root.winfo_x()
-    ywin = root.winfo_y()
-    startx = event.x_root
-    starty = event.y_root
-
-    ywin = ywin - starty
-    xwin = xwin - startx
-
-    def move_window(event):  # runs when window is dragged
-        root.config(cursor="fleur")
-        root.geometry(f'+{event.x_root + xwin}+{event.y_root + ywin}')
-
-    def release_window(event):  # runs when window is released
-        root.config(cursor="arrow")
-
-    title_bar.bind('<B1-Motion>', move_window)
-    title_bar.bind('<ButtonRelease-1>', release_window)
-    title_bar_title.bind('<B1-Motion>', move_window)
-    title_bar_title.bind('<ButtonRelease-1>', release_window)
+    def returnm_size_on_hovering(event):
+        global minimize_button
+        minimize_button['bg'] = _from_rgb((112, 68, 196))
 
 
-title_bar.bind('<Button-1>', get_pos)  # so you can drag the window from the title bar
-title_bar_title.bind('<Button-1>', get_pos)  # so you can drag the window from the title
+    def get_pos(event):  # this is executed when the title bar is clicked to move the window
+        xwin = root.winfo_x()
+        ywin = root.winfo_y()
+        startx = event.x_root
+        starty = event.y_root
 
-# button effects in the title bar when hovering over buttons
-close_button.bind('<Enter>', changex_on_hovering)
-close_button.bind('<Leave>', returnx_to_normalstate)
-# minimize_button.bind('<Enter>', changem_size_on_hovering)
-# minimize_button.bind('<Leave>', returnm_size_on_hovering)
+        ywin = ywin - starty
+        xwin = xwin - startx
 
-# some settings
-b1 = ttk.Button(root, text="Start", bootstyle=SUCCESS, command=multi)
-b1.pack(side=BOTTOM, padx=10, pady=10)
-channel = tk.IntVar()
-b2 = ttk.Button(root, text="Stop", bootstyle=(INFO, OUTLINE), command=umulti)
-b2.pack(side=BOTTOM, padx=10, pady=10)
+        def move_window(event):  # runs when window is dragged
+            root.config(cursor="fleur")
+            root.geometry(f'+{event.x_root + xwin}+{event.y_root + ywin}')
 
-'''label = ttk.Label(text="Podaj czas A:", font=("Calibri", 11), bootstyle="default")
-label.pack()
-label.place(relx=0.05, rely=0.05)
+        def release_window(event):  # runs when window is released
+            root.config(cursor="arrow")
 
-labela = ttk.Label(text="(Zostaw puste, jeśli chcesz zachować domyślne wartości)", font=("Calibri", 9),
-                   bootstyle="default")
-labela.pack()
-labela.place(relx=0.45, rely=0.06)
+        title_bar.bind('<B1-Motion>', move_window)
+        title_bar.bind('<ButtonRelease-1>', release_window)
+        title_bar_title.bind('<B1-Motion>', move_window)
+        title_bar_title.bind('<ButtonRelease-1>', release_window)
 
-entry = ttk.Entry(root)
-entry.pack()
-entry.place(relx=0.2, rely=0.05)
 
-label2 = ttk.Label(text="Podaj czas B:", font=("Calibri", 11), bootstyle="default")
-label2.pack()
-label2.place(relx=0.05, rely=0.15)
+    title_bar.bind('<Button-1>', get_pos)  # so you can drag the window from the title bar
+    title_bar_title.bind('<Button-1>', get_pos)  # so you can drag the window from the title
 
-labela2 = ttk.Label(text="(Zostaw puste, jeśli chcesz zachować domyślne wartości)", font=("Calibri", 9),
-                    bootstyle="default")
-labela2.pack()
-labela2.place(relx=0.45, rely=0.16)
+    # button effects in the title bar when hovering over buttons
+    close_button.bind('<Enter>', changex_on_hovering)
+    close_button.bind('<Leave>', returnx_to_normalstate)
 
-entry2 = ttk.Entry(root)
-entry2.pack()
-entry2.place(relx=0.2, rely=0.15)'''
+    # some settings
+    b1 = ttk.Button(root, text="Start", bootstyle=SUCCESS, command=multi)
+    b1.pack(side=BOTTOM, padx=10, pady=10)
+    channel = tk.IntVar()
+    b2 = ttk.Button(root, text="Stop", bootstyle=(INFO, OUTLINE), command=umulti)
+    b2.pack(side=BOTTOM, padx=10, pady=10)
 
-entry4 = ttk.Entry(root)
-entry4.pack()
-entry4.place(relx=0.26, rely=0.15)
+    '''label = ttk.Label(text="Podaj czas A:", font=("Calibri", 11), bootstyle="default")
+    label.pack()
+    label.place(relx=0.05, rely=0.05)
+    
+    labela = ttk.Label(text="(Zostaw puste, jeśli chcesz zachować domyślne wartości)", font=("Calibri", 9),
+                       bootstyle="default")
+    labela.pack()
+    labela.place(relx=0.45, rely=0.06)
+    
+    entry = ttk.Entry(root)
+    entry.pack()
+    entry.place(relx=0.2, rely=0.05)
+    
+    label2 = ttk.Label(text="Podaj czas B:", font=("Calibri", 11), bootstyle="default")
+    label2.pack()
+    label2.place(relx=0.05, rely=0.15)
+    
+    labela2 = ttk.Label(text="(Zostaw puste, jeśli chcesz zachować domyślne wartości)", font=("Calibri", 9),
+                        bootstyle="default")
+    labela2.pack()
+    labela2.place(relx=0.45, rely=0.16)
+    
+    entry2 = ttk.Entry(root)
+    entry2.pack()
+    entry2.place(relx=0.2, rely=0.15)'''
 
-label4 = ttk.Label(text="Ilość generatorów: ", font=("Calibri", 11), bootstyle="default")
-label4.pack()
-label4.place(relx=0.05, rely=0.15)
+    entry4 = ttk.Entry(root)
+    entry4.pack()
+    entry4.place(relx=0.26, rely=0.15)
 
-label2 = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="default")
-label2.pack()
-label2.place(relx=0.05, rely=0.25)
+    label4 = ttk.Label(text="Ilość generatorów: ", font=("Calibri", 11), bootstyle="default")
+    label4.pack()
+    label4.place(relx=0.05, rely=0.15)
 
-label3 = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11),
-                   bootstyle="default")
-label3.pack()
-label3.place(relx=0.05, rely=0.35)
+    label2 = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="default")
+    label2.pack()
+    label2.place(relx=0.05, rely=0.25)
 
-toggle = ttk.Checkbutton(bootstyle="success-round-toggle", variable=channel, onvalue=1, offvalue=0)
-toggle.pack()
-toggle.place(relx=0.26, rely=0.26)
-root.mainloop()
+    label3 = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11),
+                       bootstyle="default")
+    label3.pack()
+    label3.place(relx=0.05, rely=0.35)
+
+    toggle = ttk.Checkbutton(bootstyle="success-round-toggle", variable=channel, onvalue=1, offvalue=0)
+    toggle.pack()
+    toggle.place(relx=0.26, rely=0.26)
+    root.mainloop()
