@@ -5,10 +5,14 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Button, Controller as MouseController
-import time, threading, sys
+import time, threading, sys, os
 from ctypes import windll
 from licensing.models import *
 from licensing.methods import Key, Helpers
+
+RSAPubKey = "<RSAKeyValue><Modulus>uxDDH175/MMY611BISqbqrWo+KmcitqIEBPvJbCsvwDDGvyKmzS7Ho9BsqI3FhZ6VA4R5Zan20B7BHCmGQunkDIeTdcPs0RnAnqV1dorz1SMOmeVnus+ury1osTYoSlViDDu1cAH7vyAspXjyxI637vCIWmFhpkIXRHcvs8/ZdowAfLfOpn+qW6COjE2iXzUZnW+mhfzBCaNUYlo6er6rJa/xfsSKLIcweA4GNiIRu9++dx3r0VjDoMFxb6drti0pD+2EDpm7jNrGIdcw6o3ohmP28/fXuymWqnMXuId8DNxrcVMlKwHBc2ACRZPWgeztmFgWmwS4Vg8Iu28liUkIQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
+auth = "WyI3NTExMTUzMiIsIkpBcWFpV2poR29XS290M2REZVpHTWsvYXQvTmZxZElFSm1XQzlDNnciXQ=="
+
 def varlogin():
     licencekeyvar = entryl.get()
     result = Key.activate(token=auth,\
@@ -26,6 +30,7 @@ def varlogin():
 
         f2 = open("licence.txt", "a+")
         f2.write(licencekeyvar)
+        f2.close()
         # everything went fine if we are here!
         print("Licencja dziala!")
         license_key = result[0]
@@ -35,8 +40,24 @@ def varlogin():
 try:
     f = open("licence.txt","r+")
     licencekeyvar = f.read(23)
+    f.close()
     print(licencekeyvar)
-except:
+    result = Key.activate(token=auth, \
+                          rsa_pub_key=RSAPubKey, \
+                          product_id=24135, \
+                          key=licencekeyvar, \
+                          machine_code=Helpers.GetMachineCode(v=2))
+    if result[0] == None or not Helpers.IsOnRightMachine(result[0], v=2):
+        # an error occurred or the key is invalid or it cannot be activated
+        # (eg. the limit of activated devices was achieved)
+        os.remove("licence.txt")
+        sys.exit(0)
+    else:
+        # everything went fine if we are here!
+        print("Licencja dziala!")
+        license_key = result[0]
+        print("Licencja konczy sie: " + str(license_key.expires))
+except FileNotFoundError:
     login_title = "Napisz kod licencyjny poniżej:"
     login = ttk.Window(themename="vapor")
     login.geometry('300x200')
@@ -54,8 +75,6 @@ except:
     labell2 = ttk.Label(login, text="Aktywuj program. ", font=("Calibri", 24), bootstyle="default")
     labell2.pack(side=TOP)
     labell2.place(relx=0.05, rely=0.05)
-    RSAPubKey = "<RSAKeyValue><Modulus>uxDDH175/MMY611BISqbqrWo+KmcitqIEBPvJbCsvwDDGvyKmzS7Ho9BsqI3FhZ6VA4R5Zan20B7BHCmGQunkDIeTdcPs0RnAnqV1dorz1SMOmeVnus+ury1osTYoSlViDDu1cAH7vyAspXjyxI637vCIWmFhpkIXRHcvs8/ZdowAfLfOpn+qW6COjE2iXzUZnW+mhfzBCaNUYlo6er6rJa/xfsSKLIcweA4GNiIRu9++dx3r0VjDoMFxb6drti0pD+2EDpm7jNrGIdcw6o3ohmP28/fXuymWqnMXuId8DNxrcVMlKwHBc2ACRZPWgeztmFgWmwS4Vg8Iu28liUkIQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
-    auth = "WyI3NTExMTUzMiIsIkpBcWFpV2poR29XS290M2REZVpHTWsvYXQvTmZxZElFSm1XQzlDNnciXQ=="
     bl = ttk.Button(login, text="Kontynuuj", bootstyle=(INFO, OUTLINE), command=varlogin)
     bl.pack(side=BOTTOM, padx=10, pady=10)
     login.mainloop()
