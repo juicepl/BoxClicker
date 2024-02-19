@@ -350,7 +350,7 @@ if 1==1:
         print("test")
 
 
-    tk_title = "RapyClicker v1.0.0 Pre-release 1"
+    tk_title = "RapyClicker Beta 1.0"
     root = ttk.Window(themename="vapor")
     root.geometry('600x400')
     root.title(tk_title)
