@@ -9,41 +9,61 @@ import time, threading, sys
 from ctypes import windll
 from licensing.models import *
 from licensing.methods import Key, Helpers
-global log
-log = 0
 def varlogin():
-    log = 1
+    licencekeyvar = entryl.get()
+    result = Key.activate(token=auth,\
+                       rsa_pub_key=RSAPubKey,\
+                       product_id=24135, \
+                       key=licencekeyvar,\
+                       machine_code=Helpers.GetMachineCode(v=2))
+    if result[0] == None or not Helpers.IsOnRightMachine(result[0], v=2):
+        # an error occurred or the key is invalid or it cannot be activated
+        # (eg. the limit of activated devices was achieved)
+        labell3 = ttk.Label(login, text="Licencja nie działa: {0}".format(result[1]), font=("Calibri", 11), bootstyle="danger")
+        labell3.pack()
+        labell3.place(relx=0.05, rely=0.5)
+    else:
+
+        f2 = open("licence.txt", "a+")
+        f2.write(licencekeyvar)
+        # everything went fine if we are here!
+        print("Licencja dziala!")
+        license_key = result[0]
+        print("Licencja konczy sie: " + str(license_key.expires))
+        sys.exit(0)
+
 try:
     f = open("licence.txt","r+")
     licencekeyvar = f.read(23)
     print(licencekeyvar)
 except:
-    print("Podaj kod licencyjny:" )
-    licencekeyvar = input()
-RSAPubKey = "<RSAKeyValue><Modulus>uxDDH175/MMY611BISqbqrWo+KmcitqIEBPvJbCsvwDDGvyKmzS7Ho9BsqI3FhZ6VA4R5Zan20B7BHCmGQunkDIeTdcPs0RnAnqV1dorz1SMOmeVnus+ury1osTYoSlViDDu1cAH7vyAspXjyxI637vCIWmFhpkIXRHcvs8/ZdowAfLfOpn+qW6COjE2iXzUZnW+mhfzBCaNUYlo6er6rJa/xfsSKLIcweA4GNiIRu9++dx3r0VjDoMFxb6drti0pD+2EDpm7jNrGIdcw6o3ohmP28/fXuymWqnMXuId8DNxrcVMlKwHBc2ACRZPWgeztmFgWmwS4Vg8Iu28liUkIQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
-auth = "WyI3NTExMTUzMiIsIkpBcWFpV2poR29XS290M2REZVpHTWsvYXQvTmZxZElFSm1XQzlDNnciXQ=="
+    login_title = "Napisz kod licencyjny poniżej:"
+    login = ttk.Window(themename="vapor")
+    login.geometry('300x200')
+    login.title(login_title)
+    login.resizable(0, 0)
+    login.call("wm", "attributes", ".", "-topmost", "true")
+    entryl = ttk.Entry(login)
+    entryl.pack()
+    entryl.place(relx=0.35, rely=0.3)
 
-result = Key.activate(token=auth,\
-                   rsa_pub_key=RSAPubKey,\
-                   product_id=24135, \
-                   key=licencekeyvar,\
-                   machine_code=Helpers.GetMachineCode(v=2))
-if result[0] == None or not Helpers.IsOnRightMachine(result[0], v=2):
-    # an error occurred or the key is invalid or it cannot be activated
-    # (eg. the limit of activated devices was achieved)
-    print("Licencja nie dziala: {0}".format(result[1]))
-else:
-    f2 = open("licence.txt", "a+")
-    f2.write(licencekeyvar)
-    # everything went fine if we are here!
-    print("Licencja dziala!")
-    license_key = result[0]
-    print("Licencja konczy sie: " + str(license_key.expires))
+    labell = ttk.Label(login, text="Kod licencji: ", font=("Calibri", 11), bootstyle="default")
+    labell.pack(side=TOP)
+    labell.place(relx=0.05, rely=0.3)
+
+    labell2 = ttk.Label(login, text="Aktywuj program. ", font=("Calibri", 24), bootstyle="default")
+    labell2.pack(side=TOP)
+    labell2.place(relx=0.05, rely=0.05)
+    RSAPubKey = "<RSAKeyValue><Modulus>uxDDH175/MMY611BISqbqrWo+KmcitqIEBPvJbCsvwDDGvyKmzS7Ho9BsqI3FhZ6VA4R5Zan20B7BHCmGQunkDIeTdcPs0RnAnqV1dorz1SMOmeVnus+ury1osTYoSlViDDu1cAH7vyAspXjyxI637vCIWmFhpkIXRHcvs8/ZdowAfLfOpn+qW6COjE2iXzUZnW+mhfzBCaNUYlo6er6rJa/xfsSKLIcweA4GNiIRu9++dx3r0VjDoMFxb6drti0pD+2EDpm7jNrGIdcw6o3ohmP28/fXuymWqnMXuId8DNxrcVMlKwHBc2ACRZPWgeztmFgWmwS4Vg8Iu28liUkIQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
+    auth = "WyI3NTExMTUzMiIsIkpBcWFpV2poR29XS290M2REZVpHTWsvYXQvTmZxZElFSm1XQzlDNnciXQ=="
+    bl = ttk.Button(login, text="Kontynuuj", bootstyle=(INFO, OUTLINE), command=varlogin)
+    bl.pack(side=BOTTOM, padx=10, pady=10)
+    login.mainloop()
+
+if 1==1:
     keyboard = KeyboardController()
     mouse = MouseController()
     event = threading.Event()
-
-
     def listener():
         with pynput.keyboard.Listener(
                 on_press=on_press) as listener:
@@ -102,7 +122,7 @@ else:
                 if my_thread.n == 9:
                     my_thread.n = 0
                 cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
-                         "images/ch6.png", "images/ch7.png", "images/ch8.png"]
+                             "images/ch6.png", "images/ch7.png", "images/ch8.png"]
                 time.sleep(0.1)
                 keyboard.type('/')
                 time.sleep(0.1)
@@ -136,7 +156,7 @@ else:
                 if my_thread.n == 9:
                     my_thread.n = 0
                 cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
-                         "images/ch6.png", "images/ch7.png", "images/ch8.png"]
+                             "images/ch6.png", "images/ch7.png", "images/ch8.png"]
                 time.sleep(0.1)
                 keyboard.type('/')
                 time.sleep(0.1)
