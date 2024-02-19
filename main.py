@@ -186,7 +186,6 @@ if 1==1:
                 self.started = False
                 self.z = None
 
-
     my_thread = Wrapper()
 
 
