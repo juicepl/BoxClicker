@@ -224,20 +224,21 @@ if 1==1:
         time.sleep(3)
         print(channel.get())
         print("works")
-        try:
-            keyboard.type('/')
-            time.sleep(0.1)
-            keyboard.type('ch')
-            keyboard.press(pynput.keyboard.Key.enter)
-            keyboard.release(pynput.keyboard.Key.enter)
-            time.sleep(0.3)
-            mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
-            mouse.press(Button.left)
-            mouse.release(Button.left)
-            time.sleep(2)
-        except:
-            keyboard.press(pynput.keyboard.Key.esc)
-            keyboard.release(pynput.keyboard.Key.esc)
+        if channel.get() == 1:
+            try:
+                keyboard.type('/')
+                time.sleep(0.1)
+                keyboard.type('ch')
+                keyboard.press(pynput.keyboard.Key.enter)
+                keyboard.release(pynput.keyboard.Key.enter)
+                time.sleep(0.3)
+                mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
+                mouse.press(Button.left)
+                mouse.release(Button.left)
+                time.sleep(2)
+            except:
+                keyboard.press(pynput.keyboard.Key.esc)
+                keyboard.release(pynput.keyboard.Key.esc)
         y = 1
         t1 = 0.05
         t2 = 0.1
