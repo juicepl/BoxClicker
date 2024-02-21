@@ -214,109 +214,132 @@ if 1==1:
             on_press=on_press)
         listener.start()
 
-
-    def program():
+    def isFilled(entry):
         try:
-            gencount = int(entry4.get())
+            if entry.get() != None and entry.get() != "":
+                print(entry.get())
+                my_thread.gencount = int(entry.get())
+                return True
+            else:
+                return False
+        except TypeError:
+            return False
+    def program():
+        if not isFilled(entryGen):
+            umulti()
+        print(isFilled(entryGen))
+        try:
+            my_thread.gen_length = int(entryGenL.get())
+            print("input")
         except:
-            sys.exit(0)
-        isec = int(5 * gencount + (gencount - 1) * 3.7)
-        time.sleep(3)
-        print(channel.get())
-        print("works")
-        if channel.get() == 1:
-            try:
-                keyboard.type('/')
-                time.sleep(0.1)
-                keyboard.type('ch')
-                keyboard.press(pynput.keyboard.Key.enter)
-                keyboard.release(pynput.keyboard.Key.enter)
-                time.sleep(0.3)
-                mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
-                mouse.press(Button.left)
-                mouse.release(Button.left)
-                time.sleep(2)
-            except:
-                keyboard.press(pynput.keyboard.Key.esc)
-                keyboard.release(pynput.keyboard.Key.esc)
-        y = 1
-        t1 = 0.05
-        t2 = 0.1
-        while not event.is_set():
+            pass
+        try:
+            my_thread.gap_length = int(entryGapL.get())
+            print("input2")
+        except:
+            pass
+        if not event.is_set():
             time.sleep(3)
-            keyboard.press('d')
-            mouse.press(Button.left)
-            for i in range(0, isec):
-                if event.is_set():
-                    keyboard.release(pynput.keyboard.Key.shift)
-                    mouse.release(Button.left)
-                    keyboard.release('d')
-                    print("!!!!")
-                    sys.exit(0)
-                    return
-                keyboard.press(pynput.keyboard.Key.shift)
-                time.sleep(t1)
-                keyboard.release(pynput.keyboard.Key.shift)
-                time.sleep(t2)
-            time.sleep(0.2)
-            keyboard.release('d')
-            mouse.release(Button.left)
+            print(channel.get())
+            print("works")
             if channel.get() == 1:
-                if my_thread.n == 9:
-                    my_thread.n = 0
-                cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
-                             "images/ch6.png", "images/ch7.png", "images/ch8.png"]
-                time.sleep(0.1)
-                keyboard.type('/')
-                time.sleep(0.1)
-                keyboard.type('ch')
-                keyboard.press(pynput.keyboard.Key.enter)
-                keyboard.release(pynput.keyboard.Key.enter)
-                time.sleep(0.3)
-                mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
-                mouse.press(Button.left)
-                mouse.release(Button.left)
-                my_thread.n = my_thread.n + 1
-            time.sleep(3)
-            keyboard.press('a')
-            mouse.press(Button.left)
-            for i in range(0, isec):
-                if event.is_set():
-                    keyboard.release(pynput.keyboard.Key.shift)
+                try:
+                    keyboard.type('/')
+                    time.sleep(0.1)
+                    keyboard.type('ch')
+                    keyboard.press(pynput.keyboard.Key.enter)
+                    keyboard.release(pynput.keyboard.Key.enter)
+                    time.sleep(0.3)
+                    mouse.position = (pyautogui.locateCenterOnScreen("images/ch1.png"))
+                    mouse.press(Button.left)
                     mouse.release(Button.left)
-                    keyboard.release('a')
-                    print("!!!!")
-                    sys.exit(0)
-                    return
-                keyboard.press(pynput.keyboard.Key.shift)
-                time.sleep(float(t1))
-                keyboard.release(pynput.keyboard.Key.shift)
-                time.sleep(float(t2))
-            keyboard.release('a')
-            mouse.release(Button.left)
-            time.sleep(0.1)
-            if channel.get() == 1:
-                if my_thread.n == 9:
-                    my_thread.n = 0
-                cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
-                             "images/ch6.png", "images/ch7.png", "images/ch8.png"]
-                time.sleep(0.1)
-                keyboard.type('/')
-                time.sleep(0.1)
-                keyboard.type('ch')
-                keyboard.press(pynput.keyboard.Key.enter)
-                keyboard.release(pynput.keyboard.Key.enter)
-                time.sleep(0.3)
-                mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
+                    time.sleep(2)
+                except:
+                    keyboard.press(pynput.keyboard.Key.esc)
+                    keyboard.release(pynput.keyboard.Key.esc)
+            y = 1
+            t1 = 0.03
+            t2 = 0.16
+
+            isec = int((my_thread.gen_length * 1.3 * my_thread.gencount) + ((my_thread.gencount - 1) * 1.3 * my_thread.gap_length))
+            while not event.is_set():
+                time.sleep(3)
+                keyboard.press('d')
                 mouse.press(Button.left)
+                for i in range(0, isec):
+                    if event.is_set():
+                        keyboard.release(pynput.keyboard.Key.shift)
+                        mouse.release(Button.left)
+                        keyboard.release('d')
+                        print("!!!!")
+                        sys.exit(0)
+                        return
+                    keyboard.press(pynput.keyboard.Key.shift)
+                    time.sleep(t1)
+                    keyboard.release(pynput.keyboard.Key.shift)
+                    time.sleep(t2)
+                time.sleep(0.2)
+                keyboard.release('d')
                 mouse.release(Button.left)
-                my_thread.n = my_thread.n + 1
+                if channel.get() == 1:
+                    if my_thread.n == 9:
+                        my_thread.n = 0
+                    cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
+                                 "images/ch6.png", "images/ch7.png", "images/ch8.png"]
+                    time.sleep(0.1)
+                    keyboard.type('/')
+                    time.sleep(0.1)
+                    keyboard.type('ch')
+                    keyboard.press(pynput.keyboard.Key.enter)
+                    keyboard.release(pynput.keyboard.Key.enter)
+                    time.sleep(0.3)
+                    mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
+                    mouse.press(Button.left)
+                    mouse.release(Button.left)
+                    my_thread.n = my_thread.n + 1
+                time.sleep(3)
+                keyboard.press('a')
+                mouse.press(Button.left)
+                for i in range(0, isec):
+                    if event.is_set():
+                        keyboard.release(pynput.keyboard.Key.shift)
+                        mouse.release(Button.left)
+                        keyboard.release('a')
+                        print("!!!!")
+                        sys.exit(0)
+                        return
+                    keyboard.press(pynput.keyboard.Key.shift)
+                    time.sleep(float(t1))
+                    keyboard.release(pynput.keyboard.Key.shift)
+                    time.sleep(float(t2))
+                keyboard.release('a')
+                mouse.release(Button.left)
+                time.sleep(0.1)
+                if channel.get() == 1:
+                    if my_thread.n == 9:
+                        my_thread.n = 0
+                    cpath = ["images/ch1.png", "images/ch2.png", "images/ch3.png", "images/ch4.png", "images/ch5.png",
+                                 "images/ch6.png", "images/ch7.png", "images/ch8.png"]
+                    time.sleep(0.1)
+                    keyboard.type('/')
+                    time.sleep(0.1)
+                    keyboard.type('ch')
+                    keyboard.press(pynput.keyboard.Key.enter)
+                    keyboard.release(pynput.keyboard.Key.enter)
+                    time.sleep(0.3)
+                    mouse.position = (pyautogui.locateCenterOnScreen(cpath[my_thread.n]))
+                    mouse.press(Button.left)
+                    mouse.release(Button.left)
+                    my_thread.n = my_thread.n + 1
 
 
     class Wrapper:
         def __init__(self):
             self.started = False
             self.n = 1
+            self.gencount = 0
+            self.gen_length = 13
+            self.gap_length = 9
 
         def start(self):
             if not self.started:
@@ -419,9 +442,9 @@ if 1==1:
     entry.pack()
     entry.place(relx=0.2, rely=0.05)
     
-    label2 = ttk.Label(text="Podaj czas B:", font=("Calibri", 11), bootstyle="default")
-    label2.pack()
-    label2.place(relx=0.05, rely=0.15)
+    labelCh = ttk.Label(text="Podaj czas B:", font=("Calibri", 11), bootstyle="default")
+    labelCh.pack()
+    labelCh.place(relx=0.05, rely=0.15)
     
     labela2 = ttk.Label(text="(Zostaw puste, jeśli chcesz zachować domyślne wartości)", font=("Calibri", 9),
                         bootstyle="default")
@@ -432,24 +455,40 @@ if 1==1:
     entry2.pack()
     entry2.place(relx=0.2, rely=0.15)'''
 
-    entry4 = ttk.Entry(root)
-    entry4.pack()
-    entry4.place(relx=0.26, rely=0.15)
+    entryGen = ttk.Entry(root)
+    entryGen.pack()
+    entryGen.place(relx=0.55, rely=0.15)
 
-    label4 = ttk.Label(text="Ilość generatorów: ", font=("Calibri", 11), bootstyle="default")
-    label4.pack()
-    label4.place(relx=0.05, rely=0.15)
+    labelGen = ttk.Label(text="Ilość generatorów: ", font=("Calibri", 11), bootstyle="default")
+    labelGen.pack()
+    labelGen.place(relx=0.05, rely=0.15)
 
-    label2 = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="default")
-    label2.pack()
-    label2.place(relx=0.05, rely=0.25)
+    entryGenL = ttk.Entry(root)
+    entryGenL.pack()
+    entryGenL.place(relx=0.55, rely=0.25)
 
-    label3 = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11),
-                       bootstyle="default")
-    label3.pack()
-    label3.place(relx=0.05, rely=0.35)
+    labelGenL = ttk.Label(text="Szerokość generatora: ", font=("Calibri", 11), bootstyle="default")
+    labelGenL.pack()
+    labelGenL.place(relx=0.05, rely=0.25)
+
+    labelGapL = ttk.Label(text="Szerokość przestrzeni między generatorami: ", font=("Calibri", 11), bootstyle="default")
+    labelGapL.pack()
+    labelGapL.place(relx=0.05, rely=0.35)
+
+    entryGapL = ttk.Entry(root)
+    entryGapL.pack()
+    entryGapL.place(relx=0.55, rely=0.35)
+
+    labelCh = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="default")
+    labelCh.pack()
+    labelCh.place(relx=0.05, rely=0.45)
 
     toggle = ttk.Checkbutton(bootstyle="success-round-toggle", variable=channel, onvalue=1, offvalue=0)
     toggle.pack()
-    toggle.place(relx=0.26, rely=0.26)
+    toggle.place(relx=0.26, rely=0.46)
     root.mainloop()
+
+    labelInfo = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11),
+                       bootstyle="default")
+    labelInfo.pack()
+    labelInfo.place(relx=0.05, rely=0.55)
