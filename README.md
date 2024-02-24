@@ -1,5 +1,5 @@
 
-# RapyClicker
+# BoxClicker
 
 Hello! I'm showing you a RapyClicker program! **This project is actually in building process and I do not recommend to use this today.**
 ## License
