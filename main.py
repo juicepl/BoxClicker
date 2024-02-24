@@ -374,7 +374,7 @@ if 1==1:
         print("test")
 
 
-    tk_title = "BoxClicker Beta 2.1"
+    tk_title = "BoxClicker Beta 2.2"
     root = ttk.Window(themename="vapor")
     root.geometry('600x400')
     root.title(tk_title)
