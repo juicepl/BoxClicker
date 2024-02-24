@@ -374,7 +374,7 @@ if 1==1:
         print("test")
 
 
-    tk_title = "RapyClicker Beta 1.0"
+    tk_title = "BoxClicker Beta 2.1"
     root = ttk.Window(themename="vapor")
     root.geometry('600x400')
     root.title(tk_title)
@@ -454,41 +454,50 @@ if 1==1:
     entry2 = ttk.Entry(root)
     entry2.pack()
     entry2.place(relx=0.2, rely=0.15)'''
-
+    labelX = 0.03
+    entryX = 0.5
+    labelDX = 0.74
     entryGen = ttk.Entry(root)
     entryGen.pack()
-    entryGen.place(relx=0.55, rely=0.15)
+    entryGen.place(relx=entryX, rely=0.15)
 
     labelGen = ttk.Label(text="Ilość generatorów: ", font=("Calibri", 11), bootstyle="default")
     labelGen.pack()
-    labelGen.place(relx=0.05, rely=0.15)
+    labelGen.place(relx=labelX, rely=0.15)
 
     entryGenL = ttk.Entry(root)
     entryGenL.pack()
-    entryGenL.place(relx=0.55, rely=0.25)
+    entryGenL.place(relx=entryX, rely=0.25)
 
     labelGenL = ttk.Label(text="Szerokość generatora: ", font=("Calibri", 11), bootstyle="default")
     labelGenL.pack()
-    labelGenL.place(relx=0.05, rely=0.25)
+    labelGenL.place(relx=labelX, rely=0.25)
 
-    labelGapL = ttk.Label(text="Szerokość przestrzeni między generatorami: ", font=("Calibri", 11), bootstyle="default")
+    labelD1 = ttk.Label(text="(Zostaw puste, jeśli chcesz\n zachować domyślne wartości)", font=("Calibri", 8), bootstyle="default")
+    labelD1.pack()
+    labelD1.place(relx=labelDX, rely=0.25)
+
+    labelGapL = ttk.Label(text="Długość przestrzeni między generatorami: ", font=("Calibri", 11), bootstyle="default")
     labelGapL.pack()
-    labelGapL.place(relx=0.05, rely=0.35)
+    labelGapL.place(relx=labelX, rely=0.35)
 
     entryGapL = ttk.Entry(root)
     entryGapL.pack()
-    entryGapL.place(relx=0.55, rely=0.35)
+    entryGapL.place(relx=entryX, rely=0.35)
+
+    labelD2 = ttk.Label(text="(Zostaw puste, jeśli chcesz\n zachować domyślne wartości)", font=("Calibri", 8), bootstyle="default")
+    labelD2.pack()
+    labelD2.place(relx=labelDX, rely=0.35)
 
     labelCh = ttk.Label(text="Zmieniać channel?", font=("Calibri", 11), bootstyle="default")
     labelCh.pack()
-    labelCh.place(relx=0.05, rely=0.45)
+    labelCh.place(relx=labelX, rely=0.45)
 
     toggle = ttk.Checkbutton(bootstyle="success-round-toggle", variable=channel, onvalue=1, offvalue=0)
     toggle.pack()
     toggle.place(relx=0.26, rely=0.46)
-    root.mainloop()
 
-    labelInfo = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11),
-                       bootstyle="default")
+    labelInfo = ttk.Label(text="Uwaga! Program uruchomi się po 3 sekundach od kliknięcia 'Start'!", font=("Calibri", 11), bootstyle="default")
     labelInfo.pack()
-    labelInfo.place(relx=0.05, rely=0.55)
+    labelInfo.place(relx=0.03, rely=0.6)
+    root.mainloop()
