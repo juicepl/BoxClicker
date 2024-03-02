@@ -449,7 +449,7 @@ if 1==1:
     labela2 = ttk.Label(text="(Zostaw puste, jeśli chcesz zachować domyślne wartości)", font=("Calibri", 9),
                         bootstyle="default")
     labela2.pack()
-    labela2.place(relx=0.45, rely=0.16)
+    labela2.place(relx=0.45, rely=0.                       16)
     
     entry2 = ttk.Entry(root)
     entry2.pack()
